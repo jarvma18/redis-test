@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  shared:
+    container_name: shared
+    build: ./shared
+  api:
+    container_name: api
+    build: ./api
+    volumes:
+      - ./api:/usr/src/app
+      - ./shared:/usr/src/shared
+    ports:
+      - '8080:8080'
+    networks:
+      - default
+    restart: unless-stopped
+  redis:
+    container_name: redis
+    build: ./redis
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - default
+    restart: unless-stopped
+  tester:
+    container_name: tester
+    build: ./tester
+    volumes:
+      - ./tester:/usr/src/app
+      - ./shared:/usr/src/shared
+    networks:
+      - default
+    restart: unless-stopped
